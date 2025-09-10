@@ -44,7 +44,7 @@ const ReportPreviewPage: React.FC = () => {
   const handleGeneratePDF = () => {
     const input = reportContentRef.current;
     if (input) {
-      html2canvas(input, { scale: 2 }).then(canvas => {
+      html2canvas(input, { scale: 2 }).then((canvas: HTMLCanvasElement) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
