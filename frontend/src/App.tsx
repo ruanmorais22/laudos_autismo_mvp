@@ -22,6 +22,7 @@ const App: React.FC = () => {
 
 const Layout: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,30 +44,33 @@ const Layout: React.FC = () => {
             <div className="logo">
               <img src="/logo.png" alt="AutismoCare Logo" style={{ height: '40px' }} />
             </div>
-            <nav className="nav">
-              <Link to={session ? "/dashboard" : "/"} className="nav-link">
+            <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              &#9776;
+            </button>
+            <nav className={`nav ${isMenuOpen ? 'open' : ''}`}>
+              <Link to={session ? "/dashboard" : "/"} className="nav-link" onClick={() => setIsMenuOpen(false)}>
                 <span>🏠</span>
                 Início
               </Link>
               {session && (
-                <Link to="/patients" className="nav-link">
+                <Link to="/patients" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   <span>👥</span>
                   Pacientes
                 </Link>
               )}
               {!session ? (
                 <>
-                  <Link to="/login" className="nav-link">
+                  <Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     <span>🔐</span>
                     Login
                   </Link>
-                  <Link to="/register" className="nav-link">
+                  <Link to="/register" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     <span>📝</span>
                     Cadastro
                   </Link>
                 </>
               ) : (
-                <Link to="/account" className="nav-link">
+                <Link to="/account" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   <span>👤</span>
                   Minha Conta
                 </Link>

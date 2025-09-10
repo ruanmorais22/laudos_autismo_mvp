@@ -61,6 +61,15 @@
   font-size: 1.1rem;
 }
 
+.menu-toggle {
+  display: none; /* Escondido por padrão em telas grandes */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
 /* Main Content */
 .main {
   flex: 1;
@@ -269,14 +278,27 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .header-content {
+  .menu-toggle {
+    display: block; /* Mostra o botão em telas pequenas */
+  }
+
+  .nav {
+    display: none; /* Esconde a navegação por padrão */
     flex-direction: column;
-    gap: 1rem;
+    width: 100%;
+    background-color: var(--primary-blue-dark);
+    position: absolute;
+    top: 70px; /* Altura do header */
+    left: 0;
+    padding: 1rem;
+  }
+
+  .nav.open {
+    display: flex; /* Mostra a navegação quando aberta */
   }
   
-  .nav {
+  .header-content {
     flex-wrap: wrap;
-    justify-content: center;
   }
   
   .hero-content h1 {
