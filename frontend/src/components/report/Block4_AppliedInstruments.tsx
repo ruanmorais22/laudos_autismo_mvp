@@ -14,11 +14,9 @@ type ReportData = {
 type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData, value: Instrument[]) => void;
-  onFilesChange: (block: string, files: FileList | null, instrumentId: string) => void;
-  attachments: any[];
 };
 
-const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange, attachments }) => {
+const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange }) => {
   const [instruments, setInstruments] = useState<Instrument[]>(data.applied_instruments);
 
   useEffect(() => {

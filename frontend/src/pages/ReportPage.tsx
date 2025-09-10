@@ -74,24 +74,24 @@ const ReportPage: React.FC = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   // TEMPORARIAMENTE DESABILITADO - Upload de arquivos
+  // const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  // const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   // const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: FileList | null }>({});
   // const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
 
-  const sanitizeFileName = (name: string) => {
-    const extension = name.split('.').pop();
-    const baseName = name.substring(0, name.lastIndexOf('.'));
-    return baseName
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .trim()
-      .replace(/\s+/g, '-') + `.${extension}`;
-  };
+  // const sanitizeFileName = (name: string) => {
+  //   const extension = name.split('.').pop();
+  //   const baseName = name.substring(0, name.lastIndexOf('.'));
+  //   return baseName
+  //     .normalize("NFD")
+  //     .replace(/[\u0300-\u036f]/g, "")
+  //     .toLowerCase()
+  //     .replace(/[^a-z0-9\s-]/g, '')
+  //     .trim()
+  //     .replace(/\s+/g, '-') + `.${extension}`;
+  // };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -164,20 +164,20 @@ const ReportPage: React.FC = () => {
         [field]: value,
       },
     }));
-    setHasUnsavedChanges(true);
+    // setHasUnsavedChanges(true);
   };
 
   const handleInstrumentsChange = (_field: 'applied_instruments', value: Instrument[]) => {
     setReportData(prev => ({ ...prev, applied_instruments: value }));
-    setHasUnsavedChanges(true);
+    // setHasUnsavedChanges(true);
   };
 
   // TEMPORARIAMENTE DESABILITADO - Upload de arquivos
-  const handleFilesChange = (block: string, files: FileList | null, id?: string) => {
-    // const key = id ? `${block}-${id}` : block;
-    // setFilesToUpload(prev => ({ ...prev, [key]: files }));
-    // setHasUnsavedChanges(true);
-  };
+  // const handleFilesChange = (block: string, files: FileList | null, id?: string) => {
+  //   const key = id ? `${block}-${id}` : block;
+  //   setFilesToUpload(prev => ({ ...prev, [key]: files }));
+  //   setHasUnsavedChanges(true);
+  // };
 
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
 
@@ -281,8 +281,8 @@ const ReportPage: React.FC = () => {
       // }
       // setFilesToUpload({});
       
-      setLastSaved(new Date());
-      setHasUnsavedChanges(false);
+      // setLastSaved(new Date());
+      // setHasUnsavedChanges(false);
       alert('Rascunho salvo com sucesso!');
     } catch (err: any) {
       alert(`Erro ao salvar rascunho: ${err.message}`);
@@ -348,13 +348,13 @@ const ReportPage: React.FC = () => {
           </ReportBlock>
 
           <ReportBlock title="Histórico e Anamnese" stepNumber={2} isCompleted={isBlockCompleted('history')} description="Histórico médico, desenvolvimento e antecedentes familiares">
-            <Block2_History data={reportData} onDataChange={(field, value) => handleDataChange('history', field, value)} onFilesChange={handleFilesChange} attachments={[]} />
+            <Block2_History data={reportData} onDataChange={(field, value) => handleDataChange('history', field, value)} />
           </ReportBlock>
           <ReportBlock title="Observação Clínica" stepNumber={3} isCompleted={isBlockCompleted('clinical_observation')} description="Avaliação comportamental e observações clínicas">
-            <Block3_ClinicalObservation data={reportData} onDataChange={(field, value) => handleDataChange('clinical_observation', field, value)} onFilesChange={handleFilesChange} attachments={[]} />
+            <Block3_ClinicalObservation data={reportData} onDataChange={(field, value) => handleDataChange('clinical_observation', field, value)} />
           </ReportBlock>
           <ReportBlock title="Instrumentos Aplicados" stepNumber={4} isCompleted={isBlockCompleted('applied_instruments')} description="Escalas e testes utilizados na avaliação">
-            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} onFilesChange={handleFilesChange} attachments={[]} />
+            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} />
           </ReportBlock>
           <ReportBlock title="Critérios Diagnósticos" stepNumber={5} isCompleted={isBlockCompleted('diagnostic_criteria')} description="Critérios DSM-5 e conclusões diagnósticas">
             <Block5_DiagnosticCriteria data={reportData} onDataChange={(field, value) => handleDataChange('diagnostic_criteria', field, value)} />

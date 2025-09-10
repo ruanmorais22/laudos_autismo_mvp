@@ -13,18 +13,12 @@ type ReportData = {
 type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData['history'], value: string) => void;
-  onFilesChange: (block: string, files: FileList | null) => void;
-  attachments: any[];
 };
 
-const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange, attachments }) => {
+const Block2_History: React.FC<BlockProps> = ({ data, onDataChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onDataChange(name as keyof ReportData['history'], value);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onFilesChange('history', e.target.files);
   };
 
   return (
