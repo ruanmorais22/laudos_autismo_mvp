@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +30,8 @@ const RegisterPage: React.FC = () => {
     if (error) {
       setMessage(`Erro no registro: ${error.message}`);
     } else {
-      setMessage('Registro realizado com sucesso! Verifique seu email para confirmação.');
+      setMessage('Registro realizado com sucesso! Redirecionando...');
+      navigate('/dashboard');
     }
     setLoading(false);
   };
