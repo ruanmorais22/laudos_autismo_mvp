@@ -9,6 +9,16 @@ type Patient = {
   full_name: string;
   date_of_birth: string;
   created_at: string;
+  gender?: string;
+  cpf?: string;
+  responsible_name?: string;
+  responsible_cpf?: string;
+  phone?: string;
+  email?: string;
+  address_street?: string;
+  address_city?: string;
+  address_state?: string;
+  address_zip?: string;
 };
 
 const PatientsPage: React.FC = () => {
