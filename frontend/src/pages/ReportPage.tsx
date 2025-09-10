@@ -266,85 +266,119 @@ const ReportPage: React.FC = () => {
           if (report) {
             setCurrentReportId(report.id);
 
-          // Carregar dados do histórico
-          const { data: historyData } = await supabase
-            .from('report_history')
-            .select('*')
-            .eq('report_id', report.id)
-            .single();
+            // Carregar dados do histórico
+            const { data: historyData } = await supabase
+              .from('report_history')
+              .select('*')
+              .eq('report_id', report.id)
+              .single();
 
-          // Carregar observações clínicas
-          const { data: observationData } = await supabase
-            .from('clinical_observations')
-            .select('*')
-            .eq('report_id', report.id)
-            .single();
+            // Carregar observações clínicas
+            const { data: observationData } = await supabase
+              .from('clinical_observations')
+              .select('*')
+              .eq('report_id', report.id)
+              .single();
 
-          // Carregar critérios diagnósticos
-          const { data: criteriaData } = await supabase
-            .from('diagnostic_criteria')
-            .select('*')
-            .eq('report_id', report.id);
+            // Carregar critérios diagnósticos
+            const { data: criteriaData } = await supabase
+              .from('diagnostic_criteria')
+              .select('*')
+              .eq('report_id', report.id);
 
-          // Carregar diagnósticos diferenciais
-          const { data: differentialData } = await supabase
-            .from('differential_diagnoses')
-            .select('*')
-            .eq('report_id', report.id);
+            // Carregar diagnósticos diferenciais
+            const { data: differentialData } = await supabase
+              .from('differential_diagnoses')
+              .select('*')
+              .eq('report_id', report.id);
 
-          // Carregar instrumentos aplicados
-          const { data: instrumentsData } = await supabase
-            .from('applied_instruments')
-            .select('*')
-            .eq('report_id', report.id);
+            // Carregar instrumentos aplicados
+            const { data: instrumentsData } = await supabase
+              .from('applied_instruments')
+              .select('*')
+              .eq('report_id', report.id);
 
-          // Preparar critérios DSM-5
-          const criteriaMap: { [key: string]: boolean } = {};
-          if (criteriaData) {
-            criteriaData.forEach((item: any) => {
-              criteriaMap[`dsm5_${item.criterion}`] = item.is_met;
+            // Preparar critérios DSM-5
+            const criteriaMap: { [key: string]: boolean } = {};
+            if (criteriaData) {
+              criteriaData.forEach((item: any) => {
+                criteriaMap[`dsm5_${item.criterion}`] = item.is_met;
+              });
+            }
+
+            // Preparar diagnósticos diferenciais
+            const differentials = differentialData?.filter((d: any) => d.diagnosis_type === 'DIFFERENTIAL') || [];
+            const comorbidities = differentialData?.filter((d: any) => d.diagnosis_type === 'COMORBIDITY') || [];
+
+            setReportData({
+              history: {
+                pregnancy_complications: historyData?.pregnancy_complications || '',
+                developmental_milestones: historyData?.developmental_milestones || '',
+                medical_history: historyData?.relevant_medical_history || '',
+                family_history: historyData?.family_history || '',
+              },
+              clinical_observation: {
+                verbal_communication: observationData?.verbal_communication || '',
+                nonverbal_communication: observationData?.nonverbal_communication || '',
+                social_interaction: observationData?.social_interaction || '',
+                repetitive_behaviors: observationData?.repetitive_behaviors || '',
+                sensory_sensitivities: observationData?.sensory_hypersensitivity || '',
+              },
+              applied_instruments: instrumentsData || [],
+              diagnostic_criteria: {
+                dsm5_A1: criteriaMap['dsm5_A1'] || false,
+                dsm5_A2: criteriaMap['dsm5_A2'] || false,
+                dsm5_A3: criteriaMap['dsm5_A3'] || false,
+                dsm5_B1: criteriaMap['dsm5_B1'] || false,
+                dsm5_B2: criteriaMap['dsm5_B2'] || false,
+                dsm5_B3: criteriaMap['dsm5_B3'] || false,
+                dsm5_B4: criteriaMap['dsm5_B4'] || false,
+                differential_diagnosis: differentials.map((d: any) => d.condition_name).join(', '),
+                comorbidities: comorbidities.map((c: any) => c.condition_name).join(', '),
+              },
             });
           }
-
-          // Preparar diagnósticos diferenciais
-          const differentials = differentialData?.filter((d: any) => d.diagnosis_type === 'DIFFERENTIAL') || [];
-          const comorbidities = differentialData?.filter((d: any) => d.diagnosis_type === 'COMORBIDITY') || [];
-
-          setReportData({
-            history: {
-              pregnancy_complications: historyData?.pregnancy_complications || '',
-              developmental_milestones: historyData?.developmental_milestones || '',
-              medical_history: historyData?.relevant_medical_history || '',
-              family_history: historyData?.family_history || '',
-            },
-            clinical_observation: {
-              verbal_communication: observationData?.verbal_communication || '',
-              nonverbal_communication: observationData?.nonverbal_communication || '',
-              social_interaction: observationData?.social_interaction || '',
-              repetitive_behaviors: observationData?.repetitive_behaviors || '',
-              sensory_sensitivities: observationData?.sensory_hypersensitivity || '',
-            },
-            applied_instruments: instrumentsData || [],
-            diagnostic_criteria: {
-              dsm5_A1: criteriaMap['dsm5_A1'] || false,
-              dsm5_A2: criteriaMap['dsm5_A2'] || false,
-              dsm5_A3: criteriaMap['dsm5_A3'] || false,
-              dsm5_B1: criteriaMap['dsm5_B1'] || false,
-              dsm5_B2: criteriaMap['dsm5_B2'] || false,
-              dsm5_B3: criteriaMap['dsm5_B3'] || false,
-              dsm5_B4: criteriaMap['dsm5_B4'] || false,
-              differential_diagnosis: differentials.map((d: any) => d.condition_name).join(', '),
-              comorbidities: comorbidities.map((c: any) => c.condition_name).join(', '),
-            },
-          });
+        } catch (err) {
+          console.error('Erro ao carregar dados do laudo:', err);
         }
-      } catch (err) {
-        console.error('Erro ao carregar dados do laudo:', err);
+      } else {
+        // Se não há reportId na URL, significa que é um novo laudo
+        // Resetar todos os dados para o estado inicial
+        setCurrentReportId(null);
+        setReportData({
+          history: {
+            pregnancy_complications: '',
+            developmental_milestones: '',
+            medical_history: '',
+            family_history: '',
+          },
+          clinical_observation: {
+            verbal_communication: '',
+            nonverbal_communication: '',
+            social_interaction: '',
+            repetitive_behaviors: '',
+            sensory_sensitivities: '',
+          },
+          applied_instruments: [],
+          diagnostic_criteria: {
+            dsm5_A1: false,
+            dsm5_A2: false,
+            dsm5_A3: false,
+            dsm5_B1: false,
+            dsm5_B2: false,
+            dsm5_B3: false,
+            dsm5_B4: false,
+            differential_diagnosis: '',
+            comorbidities: '',
+          },
+        });
+        setHasUnsavedChanges(false);
+        setLastSaved(null);
       }
     };
 
     loadReportData();
-  }, [patient]);
+  }, [patient, searchParams]);
 
   // Função para salvar rascunho
   const handleSaveDraft = async () => {
