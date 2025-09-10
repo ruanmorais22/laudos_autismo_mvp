@@ -297,8 +297,79 @@ const ReportPage: React.FC = () => {
   };
 
   const handleGenerateReport = async () => {
-    if (!patient || !currentReportId) return;
-    // ... (lógica existente)
+    if (!patient) {
+      alert('Erro: Dados do paciente não encontrados.');
+      return;
+    }
+
+    if (progressPercentage < 80) {
+      alert('Complete pelo menos 80% do formulário para gerar o laudo final.');
+      return;
+    }
+
+    const confirmation = window.confirm('Tem certeza que deseja gerar e enviar o laudo final?');
+    if (!confirmation) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // Obter dados do usuário/profissional
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      // Buscar informações completas do profissional
+      const { data: professionalData } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      const finalReportPayload = {
+        patient_details: patient,
+        report_data: reportData,
+        professional_details: {
+          id: user.id,
+          email: user.email,
+          ...professionalData,
+        },
+        report_metadata: {
+          report_id: currentReportId,
+          generated_at: new Date().toISOString(),
+          generated_by: user.id,
+        },
+      };
+
+      const response = await fetch('https://n8n.minhalara.com.br/webhook/tea_laudos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalReportPayload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na comunicação com o servidor: ${response.statusText}`);
+      }
+
+      // Marcar o laudo como 'CONCLUIDO' no banco de dados se houver currentReportId
+      if (currentReportId) {
+        await supabase
+          .from('reports')
+          .update({ status: 'CONCLUIDO', updated_at: new Date().toISOString() })
+          .eq('id', currentReportId);
+      }
+
+      alert('Laudo gerado e enviado com sucesso!');
+      navigate('/patients');
+    } catch (err: any) {
+      console.error('Erro ao gerar laudo:', err);
+      alert(`Ocorreu um erro ao enviar o laudo: ${err.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (loading) return <div>Carregando...</div>;
