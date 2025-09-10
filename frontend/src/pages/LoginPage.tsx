@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,8 +22,8 @@ const LoginPage: React.FC = () => {
     if (error) {
       setMessage(`Erro no login: ${error.message}`);
     } else {
-      setMessage('Login realizado com sucesso!');
-      // TODO: Redirecionar para o dashboard
+      setMessage('Login realizado com sucesso! Redirecionando...');
+      navigate('/dashboard');
     }
     setLoading(false);
   };

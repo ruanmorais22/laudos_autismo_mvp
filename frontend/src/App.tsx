@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PatientsPage from './pages/PatientsPage';
 import ReportPage from './pages/ReportPage';
+import DashboardPage from './pages/DashboardPage';
 import './App.css';
 import type { Session } from '@supabase/supabase-js';
 
@@ -84,6 +85,7 @@ const Layout: React.FC = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/patients" element={<PatientsPage />} />
             <Route path="/report/:patientId" element={<ReportPage />} />
             <Route path="/" element={<HomePage />} />
