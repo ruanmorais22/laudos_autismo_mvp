@@ -34,11 +34,6 @@ const Layout: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/'); // Redireciona para a home após o logout
-  };
-
   return (
     <div className="app">
       <header className="header">
