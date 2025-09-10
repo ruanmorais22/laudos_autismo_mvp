@@ -42,57 +42,108 @@ const PatientsPage: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Carregando pacientes...</div>;
+    return (
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <span>Carregando pacientes...</span>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Erro ao carregar pacientes: {error}</div>;
+    return (
+      <div className="page-container">
+        <div className="error-container">
+          <div className="error-icon">⚠️</div>
+          <h3>Erro ao carregar pacientes</h3>
+          <p>{error}</p>
+          <button onClick={fetchPatients} className="secondary">
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Meus Pacientes</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Gerenciar Pacientes</h1>
+        <p>Visualize e gerencie os dados dos seus pacientes</p>
+      </div>
 
       {showForm ? (
-        <>
+        <div className="form-container">
           <PatientForm onSuccess={handleFormSuccess} />
-          <button onClick={() => setShowForm(false)}>Cancelar</button>
-        </>
+          <div className="form-actions">
+            <button 
+              onClick={() => setShowForm(false)}
+              className="outline"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       ) : (
         <>
-          <button onClick={() => setShowForm(true)}>
-            Adicionar Novo Paciente
-          </button>
+          <div className="page-actions">
+            <button 
+              onClick={() => setShowForm(true)}
+              className="success"
+            >
+              ➕ Adicionar Novo Paciente
+            </button>
+          </div>
           
           {patients.length === 0 ? (
-            <p>Nenhum paciente encontrado.</p>
+            <div className="empty-state">
+              <div className="empty-icon">👥</div>
+              <h3>Nenhum paciente encontrado</h3>
+              <p>Comece adicionando seu primeiro paciente ao sistema.</p>
+            </div>
           ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome Completo</th>
-                  <th>Data de Nascimento</th>
-                  <th>Data de Criação</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {patients.map((patient) => (
-                  <tr key={patient.id}>
-                    <td>{patient.full_name}</td>
-                    <td>{new Date(patient.date_of_birth).toLocaleDateString()}</td>
-                <td>{new Date(patient.created_at).toLocaleDateString()}</td>
-                <td>
-                  <Link to={`/report/${patient.id}`}>
-                    <button>Novo Laudo</button>
-                  </Link>
-                  <button onClick={() => alert(`TODO: Editar paciente ${patient.id}`)}>Editar</button>
-                  <button onClick={() => alert(`TODO: Excluir paciente ${patient.id}`)}>Excluir</button>
-                </td>
-              </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="patients-table-container">
+              <table className="patients-table">
+                <thead>
+                  <tr>
+                    <th>Nome Completo</th>
+                    <th>Data de Nascimento</th>
+                    <th>Data de Cadastro</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patients.map((patient) => (
+                    <tr key={patient.id}>
+                      <td className="patient-name">{patient.full_name}</td>
+                      <td>{new Date(patient.date_of_birth).toLocaleDateString('pt-BR')}</td>
+                      <td>{new Date(patient.created_at).toLocaleDateString('pt-BR')}</td>
+                      <td className="actions">
+                        <Link to={`/report/${patient.id}`}>
+                          <button className="action-btn primary">
+                            📋 Novo Laudo
+                          </button>
+                        </Link>
+                        <button 
+                          className="action-btn secondary"
+                          onClick={() => alert(`TODO: Editar paciente ${patient.id}`)}
+                        >
+                          ✏️ Editar
+                        </button>
+                        <button 
+                          className="action-btn danger"
+                          onClick={() => alert(`TODO: Excluir paciente ${patient.id}`)}
+                        >
+                          🗑️ Excluir
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </>
       )}

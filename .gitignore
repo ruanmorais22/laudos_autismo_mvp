@@ -17,6 +17,7 @@ yarn-error.log*
 # IDE / Editor specific
 .vscode
 .idea
+*.code-workspace
 
 # Local Netlify folder
 .netlify

@@ -44,58 +44,100 @@ const Block5_DiagnosticCriteria: React.FC<BlockProps> = ({ data, onDataChange })
     onDataChange(name as keyof ReportData['diagnostic_criteria'], value);
   };
 
+  // Contar critérios preenchidos
+  const criteriaAChecked = Object.entries(data.diagnostic_criteria)
+    .filter(([key]) => key.startsWith('dsm5_A'))
+    .filter(([, value]) => value === true).length;
+  
+  const criteriaBChecked = Object.entries(data.diagnostic_criteria)
+    .filter(([key]) => key.startsWith('dsm5_B'))
+    .filter(([, value]) => value === true).length;
+
+  const isValidDiagnosis = criteriaAChecked >= 2 && criteriaBChecked >= 2;
+
   return (
     <div className="form-block">
-      <h4>Critérios DSM-5 (Preencher pelo menos 2 de A e 2 de B)</h4>
+      <div className="diagnostic-header">
+        <h4>🔍 Critérios Diagnósticos DSM-5 para TEA</h4>
+        <div className="criteria-status">
+          <div className={`criteria-counter ${criteriaAChecked >= 2 ? 'valid' : 'pending'}`}>
+            Critério A: {criteriaAChecked}/3 (mín. 2)
+          </div>
+          <div className={`criteria-counter ${criteriaBChecked >= 2 ? 'valid' : 'pending'}`}>
+            Critério B: {criteriaBChecked}/4 (mín. 2)
+          </div>
+          <div className={`diagnosis-status ${isValidDiagnosis ? 'valid' : 'pending'}`}>
+            {isValidDiagnosis ? '✅ Critérios atendidos' : '⚠️ Critérios insuficientes'}
+          </div>
+        </div>
+      </div>
       
-      <h5>A. Déficits persistentes na comunicação social e na interação social</h5>
-      {Object.entries(dsm5Criteria.A).map(([key, value]) => (
-        <div className="form-group-checkbox" key={key}>
-          <input
-            type="checkbox"
-            id={key}
-            name={`dsm5_${key}`}
-            checked={Boolean(data.diagnostic_criteria[`dsm5_${key}` as keyof typeof data.diagnostic_criteria])}
-            onChange={handleCheckboxChange}
-          />
-          <label htmlFor={key}>{`${key}: ${value}`}</label>
-        </div>
-      ))}
-
-      <h5>B. Padrões restritos e repetitivos de comportamento, interesses ou atividades</h5>
-      {Object.entries(dsm5Criteria.B).map(([key, value]) => (
-        <div className="form-group-checkbox" key={key}>
-          <input
-            type="checkbox"
-            id={key}
-            name={`dsm5_${key}`}
-            checked={Boolean(data.diagnostic_criteria[`dsm5_${key}` as keyof typeof data.diagnostic_criteria])}
-            onChange={handleCheckboxChange}
-          />
-          <label htmlFor={key}>{`${key}: ${value}`}</label>
-        </div>
-      ))}
-
-      <div className="form-group">
-        <label htmlFor="differential_diagnosis">Hipóteses diferenciais consideradas</label>
-        <textarea
-          id="differential_diagnosis"
-          name="differential_diagnosis"
-          value={data.diagnostic_criteria.differential_diagnosis}
-          onChange={handleTextAreaChange}
-          rows={4}
-        />
+      <div className="criteria-section">
+        <h5>📊 A. Déficits persistentes na comunicação social e na interação social</h5>
+        <p className="criteria-instruction">Marque <strong>todas</strong> as características presentes (mínimo 2):</p>
+        {Object.entries(dsm5Criteria.A).map(([key, value]) => (
+          <div className="form-group-checkbox" key={key}>
+            <input
+              type="checkbox"
+              id={key}
+              name={`dsm5_${key}`}
+              checked={Boolean(data.diagnostic_criteria[`dsm5_${key}` as keyof typeof data.diagnostic_criteria])}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor={key}>
+              <strong>{key}:</strong> {value}
+            </label>
+          </div>
+        ))}
       </div>
 
-      <div className="form-group">
-        <label htmlFor="comorbidities">Comorbidades observadas</label>
-        <textarea
-          id="comorbidities"
-          name="comorbidities"
-          value={data.diagnostic_criteria.comorbidities}
-          onChange={handleTextAreaChange}
-          rows={4}
-        />
+      <div className="criteria-section">
+        <h5>🎯 B. Padrões restritos e repetitivos de comportamento, interesses ou atividades</h5>
+        <p className="criteria-instruction">Marque <strong>todas</strong> as características presentes (mínimo 2):</p>
+        {Object.entries(dsm5Criteria.B).map(([key, value]) => (
+          <div className="form-group-checkbox" key={key}>
+            <input
+              type="checkbox"
+              id={key}
+              name={`dsm5_${key}`}
+              checked={Boolean(data.diagnostic_criteria[`dsm5_${key}` as keyof typeof data.diagnostic_criteria])}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor={key}>
+              <strong>{key}:</strong> {value}
+            </label>
+          </div>
+        ))}
+      </div>
+
+      <div className="diagnostic-conclusions">
+        <div className="form-group">
+          <label htmlFor="differential_diagnosis">
+            🔬 Diagnóstico Diferencial
+          </label>
+          <textarea
+            id="differential_diagnosis"
+            name="differential_diagnosis"
+            value={data.diagnostic_criteria.differential_diagnosis}
+            onChange={handleTextAreaChange}
+            placeholder="Liste outras condições consideradas e descarte justificado (ex: deficiência intelectual, transtorno da linguagem, TDAH, etc.)"
+            rows={4}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="comorbidities">
+            🏥 Comorbidades e Condições Associadas
+          </label>
+          <textarea
+            id="comorbidities"
+            name="comorbidities"
+            value={data.diagnostic_criteria.comorbidities}
+            onChange={handleTextAreaChange}
+            placeholder="Descreva condições comórbidas identificadas (ex: deficiência intelectual, epilepsia, TDAH, transtornos de ansiedade, etc.)"
+            rows={4}
+          />
+        </div>
       </div>
     </div>
   );

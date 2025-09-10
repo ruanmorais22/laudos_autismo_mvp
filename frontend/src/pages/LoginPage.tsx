@@ -27,34 +27,49 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Senha:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
-      </form>
-      {message && <p>{message}</p>}
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Acesso ao Sistema</h1>
+        <p>Entre com suas credenciais para acessar o AutismoCare</p>
+      </div>
+      
+      <div className="card">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Digite seu email"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Senha:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Digite sua senha"
+              required
+            />
+          </div>
+          
+          <button type="submit" disabled={loading} className="w-full">
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
+        
+        {message && (
+          <div className={`alert ${message.includes('Erro') ? 'error' : 'success'}`}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

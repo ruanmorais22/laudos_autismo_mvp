@@ -43,44 +43,53 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div className="card">
       <h2>Adicionar Novo Paciente</h2>
-      <div>
-        <label htmlFor="fullName">Nome Completo:</label>
-        <input
-          type="text"
-          id="fullName"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="dateOfBirth">Data de Nascimento:</label>
-        <input
-          type="date"
-          id="dateOfBirth"
-          value={dateOfBirth}
-          onChange={(e) => setDateOfBirth(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="gender">Gênero:</label>
-        <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
-          <option value="NAO_INFORMADO">Não Informado</option>
-          <option value="MASCULINO">Masculino</option>
-          <option value="FEMININO">Feminino</option>
-          <option value="OUTRO">Outro</option>
-        </select>
-      </div>
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="fullName">Nome Completo:</label>
+          <input
+            type="text"
+            id="fullName"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Digite o nome completo do paciente"
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="dateOfBirth">Data de Nascimento:</label>
+          <input
+            type="date"
+            id="dateOfBirth"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="gender">Gênero:</label>
+          <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="NAO_INFORMADO">Não Informado</option>
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="OUTRO">Outro</option>
+          </select>
+        </div>
+        
+        {error && (
+          <div className="alert error">
+            {error}
+          </div>
+        )}
 
-      <button type="submit" disabled={loading}>
-        {loading ? 'Salvando...' : 'Salvar Paciente'}
-      </button>
-    </form>
+        <button type="submit" disabled={loading} className="w-full success">
+          {loading ? 'Salvando...' : 'Salvar Paciente'}
+        </button>
+      </form>
+    </div>
   );
 };
 
