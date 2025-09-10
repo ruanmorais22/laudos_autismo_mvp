@@ -20,7 +20,6 @@ const App: React.FC = () => {
 
 const Layout: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
