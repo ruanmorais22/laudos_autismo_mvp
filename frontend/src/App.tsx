@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PatientsPage from './pages/PatientsPage';
 import ReportPage from './pages/ReportPage';
+import ReportPreviewPage from './pages/ReportPreviewPage';
 import DashboardPage from './pages/DashboardPage';
 import AccountPage from './pages/AccountPage';
 import './App.css';
@@ -84,6 +85,7 @@ const Layout: React.FC = () => {
             <Route path="/account" element={<AccountPage />} />
             <Route path="/patients" element={<PatientsPage />} />
             <Route path="/report/:patientId" element={<ReportPage />} />
+            <Route path="/report/preview" element={<ReportPreviewPage />} />
             <Route path="/" element={<HomePage />} />
           </Routes>
         </div>

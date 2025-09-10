@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
 import Block2_History from '../components/report/Block2_History';
@@ -61,6 +61,7 @@ const ReportBlock: React.FC<ReportBlockProps> = ({ title, children, isCompleted,
 
 const ReportPage: React.FC = () => {
   const { patientId } = useParams();
+  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
@@ -469,7 +470,12 @@ const ReportPage: React.FC = () => {
 
   // Função para gerar preview
   const handleGeneratePreview = () => {
-    alert('Função de preview será implementada em breve!');
+    if (!patient) {
+      alert('Erro: Dados do paciente não encontrados.');
+      return;
+    }
+    // Passa os dados via state do router para a página de preview
+    navigate('/report/preview', { state: { patient, reportData } });
   };
 
   // Função para gerar e enviar o laudo final
