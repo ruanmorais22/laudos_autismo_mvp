@@ -245,16 +245,25 @@
 }
 
 .report-header.scrolled .patient-info-card {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  margin-bottom: 0;
-  padding: 0;
+  display: none;
 }
 
 .report-header.scrolled {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.report-header.scrolled .progress-info h3 {
+  display: none; /* Esconde o título "Progresso do Laudo" */
+}
+
+.report-header.scrolled .progress-info {
+  margin-bottom: 0.5rem;
+}
+
+.report-header.scrolled .progress-details {
+  display: none; /* Esconde o texto "x de y seções" */
 }
 
 .report-block {
