@@ -423,14 +423,21 @@ ON attachments FOR ALL USING ((SELECT professional_id FROM reports WHERE id = re
 -- =============================================================================
 
 -- Função para criar um perfil para um novo usuário
-create function public.handle_new_user()
+create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, full_name, role)
-  values (new.id, new.raw_user_meta_data->>'full_name', (new.raw_user_meta_data->>'role')::user_role);
+  insert into public.profiles (id, full_name, role, specialty, professional_registry, phone)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    (new.raw_user_meta_data->>'role')::user_role,
+    new.raw_user_meta_data->>'specialty',
+    new.raw_user_meta_data->>'professional_registry',
+    new.raw_user_meta_data->>'phone'
+  );
   return new;
 end;
 $$;

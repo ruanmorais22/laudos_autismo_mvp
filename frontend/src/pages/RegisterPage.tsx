@@ -7,7 +7,10 @@ const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('MEDICO'); // Valor padrão
+  const [role, setRole] = useState('MEDICO');
+  const [specialty, setSpecialty] = useState('');
+  const [professionalRegistry, setProfessionalRegistry] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -23,6 +26,9 @@ const RegisterPage: React.FC = () => {
         data: {
           full_name: fullName,
           role: role,
+          specialty: specialty,
+          professional_registry: professionalRegistry,
+          phone: phone,
         }
       }
     });
@@ -91,6 +97,21 @@ const RegisterPage: React.FC = () => {
               <option value="PEDIATRA">Pediatra</option>
               <option value="MULTIPROFISSIONAL">Equipe Multiprofissional</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="specialty">Especialidade</label>
+            <input type="text" id="specialty" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="Sua especialidade principal" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="professionalRegistry">Registro Profissional (CRM, CRP, etc.)</label>
+            <input type="text" id="professionalRegistry" value={professionalRegistry} onChange={(e) => setProfessionalRegistry(e.target.value)} />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="phone">Telefone</label>
+            <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           
           <button type="submit" disabled={loading} className="w-full success">
