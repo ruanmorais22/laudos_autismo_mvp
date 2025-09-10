@@ -415,8 +415,10 @@ ON previous_interventions FOR ALL USING ((SELECT professional_id FROM reports WH
 CREATE POLICY "Usuários podem acessar recomendações terapêuticas apenas de seus próprios laudos."
 ON therapeutic_recommendations FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
 
-CREATE POLICY "Usuários podem acessar anexos apenas de seus próprios laudos."
-ON attachments FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+CREATE POLICY "Usuários podem gerenciar anexos apenas de seus próprios laudos."
+ON attachments FOR ALL
+USING ( (SELECT professional_id FROM reports WHERE id = report_id) = auth.uid() )
+WITH CHECK ( (SELECT professional_id FROM reports WHERE id = report_id) = auth.uid() );
 
 -- =============================================================================
 -- FUNÇÕES E TRIGGERS PARA SINCRONIZAÇÃO DE DADOS
@@ -446,3 +448,21 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- =============================================================================
+-- POLÍTICAS DE SEGURANÇA DO STORAGE
+-- =============================================================================
+
+-- Criar o bucket se ele não existir (o usuário precisa fazer isso manualmente ou nós podemos adicionar a lógica)
+-- Por enquanto, vamos assumir que o bucket 'report_attachments' existe.
+
+-- Política para permitir que usuários vejam os arquivos em seus laudos
+CREATE POLICY "Qualquer pessoa pode ver os anexos."
+ON storage.objects FOR SELECT
+USING ( bucket_id = 'report_attachments' );
+
+-- Política para permitir que usuários autenticados insiram anexos
+-- A política restringe o upload para a pasta do próprio usuário (user.id)
+CREATE POLICY "Usuários autenticados podem inserir anexos em sua própria pasta."
+ON storage.objects FOR INSERT
+WITH CHECK ( bucket_id = 'report_attachments' AND auth.uid() = (storage.foldername(name))[1]::uuid );
