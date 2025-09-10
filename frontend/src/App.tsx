@@ -41,8 +41,7 @@ const Layout: React.FC = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <h1>AutismoCare</h1>
-              <span className="tagline">Sistema de Laudos Especializados</span>
+              <img src="/logo.png" alt="AutismoCare Logo" style={{ height: '40px' }} />
             </div>
             <nav className="nav">
               <Link to={session ? "/dashboard" : "/"} className="nav-link">
