@@ -77,6 +77,7 @@ const ReportPage: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [filesToUpload, setFilesToUpload] = useState<{ [block: string]: FileList | null }>({});
 
   // Efeito para detectar a rolagem da página
   useEffect(() => {
@@ -234,6 +235,14 @@ const ReportPage: React.FC = () => {
     setReportData(prevData => ({
       ...prevData,
       [field]: value,
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleFilesChange = (block: string, files: FileList | null) => {
+    setFilesToUpload(prevFiles => ({
+      ...prevFiles,
+      [block]: files,
     }));
     setHasUnsavedChanges(true);
   };
@@ -432,6 +441,36 @@ const ReportPage: React.FC = () => {
 
       // Garantir que reportId não é nulo para as próximas operações
       if (!reportId) throw new Error("ID do relatório não está disponível após a criação.");
+
+      // Upload de arquivos
+      for (const block in filesToUpload) {
+        const fileList = filesToUpload[block];
+        if (fileList) {
+          for (let i = 0; i < fileList.length; i++) {
+            const file = fileList[i];
+            const filePath = `${user.id}/${reportId}/${block}/${file.name}`;
+            
+            const { error: uploadError } = await supabase.storage
+              .from('report_attachments') // Nome do seu bucket no Supabase
+              .upload(filePath, file);
+
+            if (uploadError) {
+              throw new Error(`Erro no upload do arquivo: ${uploadError.message}`);
+            }
+
+            // Salvar referência na tabela attachments
+            await supabase.from('attachments').insert({
+              report_id: reportId,
+              block_reference: block,
+              file_name: file.name,
+              storage_path: filePath,
+              file_type: file.type.startsWith('image') ? 'IMAGE' : file.type === 'application/pdf' ? 'PDF' : 'DOCUMENT',
+              created_by: user.id,
+            });
+          }
+        }
+      }
+      setFilesToUpload({}); // Limpar arquivos após o upload
 
       // 3. Salvar observações clínicas
       const observationData = {
@@ -750,7 +789,7 @@ const ReportPage: React.FC = () => {
             isCompleted={isBlockCompleted('history')}
             description="Histórico médico, desenvolvimento e antecedentes familiares"
           >
-            <Block2_History data={reportData} onDataChange={handleHistoryChange} />
+            <Block2_History data={reportData} onDataChange={handleHistoryChange} onFilesChange={handleFilesChange} />
           </ReportBlock>
 
           <ReportBlock 

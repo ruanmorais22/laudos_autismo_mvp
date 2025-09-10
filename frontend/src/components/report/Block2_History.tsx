@@ -13,12 +13,17 @@ type ReportData = {
 type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData['history'], value: string) => void;
+  onFilesChange: (block: string, files: FileList | null) => void;
 };
 
-const Block2_History: React.FC<BlockProps> = ({ data, onDataChange }) => {
+const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onDataChange(name as keyof ReportData['history'], value);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFilesChange('history', e.target.files);
   };
 
   return (
@@ -89,6 +94,7 @@ const Block2_History: React.FC<BlockProps> = ({ data, onDataChange }) => {
           multiple 
           accept=".pdf,.doc,.docx,.jpg,.png"
           title="Selecione relatórios médicos, exames ou documentos relevantes"
+          onChange={handleFileChange}
         />
         <small className="file-help">
           💡 Formatos aceitos: PDF, DOC, DOCX, JPG, PNG (máx. 10MB por arquivo)
