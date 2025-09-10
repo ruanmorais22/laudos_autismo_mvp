@@ -523,6 +523,7 @@ const ReportPage: React.FC = () => {
 
   // Função para gerar preview
   const handleGeneratePreview = () => {
+    // Adicionando um comentário para forçar o re-build
     if (!patient) {
       alert('Erro: Dados do paciente não encontrados.');
       return;
