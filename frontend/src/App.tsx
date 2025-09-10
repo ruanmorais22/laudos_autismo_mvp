@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import PatientsPage from './pages/PatientsPage';
 import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
+import AccountPage from './pages/AccountPage';
 import './App.css';
 import type { Session } from '@supabase/supabase-js';
 
@@ -70,10 +71,10 @@ const Layout: React.FC = () => {
                   </Link>
                 </>
               ) : (
-                <button onClick={handleLogout} className="nav-link-button">
-                  <span>🚪</span>
-                  Sair
-                </button>
+                <Link to="/account" className="nav-link">
+                  <span>👤</span>
+                  Minha Conta
+                </Link>
               )}
             </nav>
           </div>
@@ -86,6 +87,7 @@ const Layout: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/account" element={<AccountPage />} />
             <Route path="/patients" element={<PatientsPage />} />
             <Route path="/report/:patientId" element={<ReportPage />} />
             <Route path="/" element={<HomePage />} />
