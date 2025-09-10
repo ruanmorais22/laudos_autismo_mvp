@@ -16,6 +16,17 @@ const PatientsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
+
+  const handleEdit = (patient: Patient) => {
+    setEditingPatient(patient);
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPatient(null);
+    setShowForm(false);
+  };
 
   const fetchPatients = useCallback(async () => {
     setLoading(true);
@@ -38,7 +49,29 @@ const PatientsPage: React.FC = () => {
 
   const handleFormSuccess = () => {
     setShowForm(false);
+    setEditingPatient(null);
     fetchPatients(); // Recarrega a lista de pacientes
+  };
+
+  const handleDelete = async (patientId: string, patientName: string) => {
+    if (window.confirm(`Tem certeza que deseja excluir o paciente "${patientName}"? Esta ação não pode ser desfeita.`)) {
+      try {
+        const { error } = await supabase
+          .from('patients')
+          .delete()
+          .eq('id', patientId);
+
+        if (error) {
+          throw error;
+        }
+
+        // Remove o paciente da lista local para atualização instantânea da UI
+        setPatients(patients.filter(p => p.id !== patientId));
+        alert('Paciente excluído com sucesso.');
+      } catch (error: any) {
+        alert(`Erro ao excluir paciente: ${error.message}`);
+      }
+    }
   };
 
   if (loading) {
@@ -76,10 +109,10 @@ const PatientsPage: React.FC = () => {
 
       {showForm ? (
         <div className="form-container">
-          <PatientForm onSuccess={handleFormSuccess} />
+          <PatientForm onSuccess={handleFormSuccess} patientToEdit={editingPatient} />
           <div className="form-actions">
             <button 
-              onClick={() => setShowForm(false)}
+              onClick={handleCancelEdit}
               className="outline"
             >
               Cancelar
@@ -128,13 +161,13 @@ const PatientsPage: React.FC = () => {
                         </Link>
                         <button 
                           className="action-btn secondary"
-                          onClick={() => alert(`TODO: Editar paciente ${patient.id}`)}
+                          onClick={() => handleEdit(patient)}
                         >
                           ✏️ Editar
                         </button>
                         <button 
                           className="action-btn danger"
-                          onClick={() => alert(`TODO: Excluir paciente ${patient.id}`)}
+                          onClick={() => handleDelete(patient.id, patient.full_name)}
                         >
                           🗑️ Excluir
                         </button>

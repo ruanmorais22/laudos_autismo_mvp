@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 
-type PatientFormProps = {
-  onSuccess: () => void; // Função para ser chamada após o sucesso
+type Patient = {
+  id: string;
+  full_name: string;
+  date_of_birth: string;
+  created_at: string;
 };
 
-const PatientForm: React.FC<PatientFormProps> = ({ onSuccess }) => {
+type PatientFormProps = {
+  onSuccess: () => void;
+  patientToEdit?: Patient | null;
+};
+
+const PatientForm: React.FC<PatientFormProps> = ({ onSuccess, patientToEdit }) => {
   const [fullName, setFullName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [gender, setGender] = useState('NAO_INFORMADO');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (patientToEdit) {
+      setFullName(patientToEdit.full_name);
+      setDateOfBirth(new Date(patientToEdit.date_of_birth).toISOString().split('T')[0]);
+    }
+  }, [patientToEdit]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -26,25 +41,45 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSuccess }) => {
       return;
     }
 
-    const { error: insertError } = await supabase.from('patients').insert({
-      full_name: fullName,
-      date_of_birth: dateOfBirth,
-      gender: gender,
-      created_by: user.id,
-    });
+    if (patientToEdit) {
+      // Lógica de Atualização
+      const { error: updateError } = await supabase
+        .from('patients')
+        .update({
+          full_name: fullName,
+          date_of_birth: dateOfBirth,
+          gender: gender,
+        })
+        .eq('id', patientToEdit.id);
 
-    if (insertError) {
-      setError(insertError.message);
+      if (updateError) {
+        setError(updateError.message);
+      } else {
+        alert('Paciente atualizado com sucesso!');
+        onSuccess();
+      }
     } else {
-      alert('Paciente adicionado com sucesso!');
-      onSuccess(); // Chama a função de sucesso para, por exemplo, fechar o form e atualizar a lista
+      // Lógica de Inserção
+      const { error: insertError } = await supabase.from('patients').insert({
+        full_name: fullName,
+        date_of_birth: dateOfBirth,
+        gender: gender,
+        created_by: user.id,
+      });
+
+      if (insertError) {
+        setError(insertError.message);
+      } else {
+        alert('Paciente adicionado com sucesso!');
+        onSuccess();
+      }
     }
     setLoading(false);
   };
 
   return (
     <div className="card">
-      <h2>Adicionar Novo Paciente</h2>
+      <h2>{patientToEdit ? 'Editar Paciente' : 'Adicionar Novo Paciente'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="fullName">Nome Completo:</label>
