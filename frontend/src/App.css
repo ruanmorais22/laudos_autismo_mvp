@@ -307,6 +307,69 @@
   border-top: 1px solid #e0e0e0;
 }
 
+/* Report Preview Styles */
+.report-preview-container {
+  background-color: #f0f4f8;
+  padding: 2rem;
+}
+
+.report-preview-content {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.preview-header {
+  background-color: #637792;
+  color: white;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-logo {
+  height: 40px;
+}
+
+.preview-title {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #f0f4f8;
+}
+
+.preview-body {
+  padding: 2rem;
+}
+
+.preview-section h4 {
+  border-bottom: 2px solid #637792;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #637792;
+}
+
+.preview-footer {
+  background-color: #637792;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.preview-actions {
+  max-width: 800px;
+  margin: 1rem auto;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .menu-toggle {
