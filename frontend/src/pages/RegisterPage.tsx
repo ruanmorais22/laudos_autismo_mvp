@@ -110,7 +110,7 @@ const RegisterPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone">Telefone</label>
+            <label htmlFor="phone">WhatsApp com DDD</label>
             <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           

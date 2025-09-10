@@ -104,7 +104,7 @@ const AccountPage: React.FC = () => {
             <input type="text" id="professional_registry" name="professional_registry" value={profile?.professional_registry || ''} onChange={handleProfileChange} />
           </div>
           <div className="form-group">
-            <label htmlFor="phone">Telefone</label>
+            <label htmlFor="phone">WhatsApp com DDD</label>
             <input type="tel" id="phone" name="phone" value={profile?.phone || ''} onChange={handleProfileChange} />
           </div>
           <button type="submit" className="btn-primary">Salvar Alterações</button>

@@ -14,9 +14,11 @@ type ReportData = {
 type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData, value: Instrument[]) => void;
+  onFilesChange: (block: string, files: FileList | null, instrumentId: string) => void;
+  attachments: any[];
 };
 
-const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange }) => {
+const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange, attachments }) => {
   const [instruments, setInstruments] = useState<Instrument[]>(data.applied_instruments);
 
   useEffect(() => {
@@ -74,7 +76,21 @@ const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange })
           </div>
           <div className="form-group">
             <label htmlFor={`file_upload_instrument_${instrument.id}`}>Upload de protocolos/testes</label>
-            <input type="file" id={`file_upload_instrument_${instrument.id}`} />
+            <input type="file" id={`file_upload_instrument_${instrument.id}`} onChange={(e) => onFilesChange('applied_instruments', e.target.files, instrument.id)} />
+            {attachments && attachments.filter(a => a.block_reference === `applied_instruments-${instrument.id}`).length > 0 && (
+              <div className="attachments-list">
+                <strong>Anexos salvos:</strong>
+                <ul>
+                  {attachments.filter(a => a.block_reference === `applied_instruments-${instrument.id}`).map(file => (
+                    <li key={file.id}>
+                      <a href={`https://gqqajzezmpjzmcamfzzo.supabase.co/storage/v1/object/public/report_attachments/${file.storage_path}`} target="_blank" rel="noopener noreferrer">
+                        {file.file_name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <button type="button" className="btn-remove" onClick={() => handleRemoveInstrument(instrument.id)}>
             Remover Instrumento

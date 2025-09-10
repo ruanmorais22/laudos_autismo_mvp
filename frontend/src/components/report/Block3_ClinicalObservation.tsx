@@ -13,12 +13,18 @@ type ReportData = {
 type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData['clinical_observation'], value: string) => void;
+  onFilesChange: (block: string, files: FileList | null) => void;
+  attachments: any[];
 };
 
-const Block3_ClinicalObservation: React.FC<BlockProps> = ({ data, onDataChange }) => {
+const Block3_ClinicalObservation: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange, attachments }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onDataChange(name as keyof ReportData['clinical_observation'], value);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFilesChange('clinical_observation', e.target.files);
   };
 
   return (
@@ -96,10 +102,25 @@ const Block3_ClinicalObservation: React.FC<BlockProps> = ({ data, onDataChange }
           accept="video/*,audio/*,.pdf,.doc,.docx"
           multiple
           title="Selecione vídeos, áudios ou documentos da observação clínica"
+          onChange={handleFileChange}
         />
         <small className="file-help">
           💡 Formatos aceitos: Vídeos (MP4, MOV), Áudios (MP3, WAV), Documentos (PDF, DOC) - máx. 50MB por arquivo
         </small>
+        {attachments && attachments.length > 0 && (
+          <div className="attachments-list">
+            <strong>Anexos salvos:</strong>
+            <ul>
+              {attachments.map(file => (
+                <li key={file.id}>
+                  <a href={`https://gqqajzezmpjzmcamfzzo.supabase.co/storage/v1/object/public/report_attachments/${file.storage_path}`} target="_blank" rel="noopener noreferrer">
+                    {file.file_name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

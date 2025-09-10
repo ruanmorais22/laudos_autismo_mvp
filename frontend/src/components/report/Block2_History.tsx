@@ -14,9 +14,10 @@ type BlockProps = {
   data: ReportData;
   onDataChange: (field: keyof ReportData['history'], value: string) => void;
   onFilesChange: (block: string, files: FileList | null) => void;
+  attachments: any[];
 };
 
-const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange }) => {
+const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChange, attachments }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onDataChange(name as keyof ReportData['history'], value);
@@ -99,6 +100,20 @@ const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChang
         <small className="file-help">
           💡 Formatos aceitos: PDF, DOC, DOCX, JPG, PNG (máx. 10MB por arquivo)
         </small>
+        {attachments && attachments.length > 0 && (
+          <div className="attachments-list">
+            <strong>Anexos salvos:</strong>
+            <ul>
+              {attachments.map(file => (
+                <li key={file.id}>
+                  <a href={`https://gqqajzezmpjzmcamfzzo.supabase.co/storage/v1/object/public/report_attachments/${file.storage_path}`} target="_blank" rel="noopener noreferrer">
+                    {file.file_name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

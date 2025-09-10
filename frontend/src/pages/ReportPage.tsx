@@ -78,6 +78,7 @@ const ReportPage: React.FC = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<{ [block: string]: FileList | null }>({});
+  const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
 
   // Efeito para detectar a rolagem da página
   useEffect(() => {
@@ -239,10 +240,11 @@ const ReportPage: React.FC = () => {
     setHasUnsavedChanges(true);
   };
 
-  const handleFilesChange = (block: string, files: FileList | null) => {
+  const handleFilesChange = (block: string, files: FileList | null, id?: string) => {
+    const key = id ? `${block}-${id}` : block;
     setFilesToUpload(prevFiles => ({
       ...prevFiles,
-      [block]: files,
+      [key]: files,
     }));
     setHasUnsavedChanges(true);
   };
@@ -306,6 +308,14 @@ const ReportPage: React.FC = () => {
               .from('applied_instruments')
               .select('*')
               .eq('report_id', report.id);
+
+            // Carregar anexos existentes
+            const { data: attachmentsData } = await supabase
+              .from('attachments')
+              .select('id, file_name, storage_path, block_reference')
+              .eq('report_id', report.id);
+            
+            setExistingAttachments(attachmentsData || []);
 
             // Preparar critérios DSM-5
             const criteriaMap: { [key: string]: boolean } = {};
@@ -814,7 +824,12 @@ const ReportPage: React.FC = () => {
             isCompleted={isBlockCompleted('history')}
             description="Histórico médico, desenvolvimento e antecedentes familiares"
           >
-            <Block2_History data={reportData} onDataChange={handleHistoryChange} onFilesChange={handleFilesChange} />
+            <Block2_History 
+              data={reportData} 
+              onDataChange={handleHistoryChange} 
+              onFilesChange={handleFilesChange} 
+              attachments={existingAttachments.filter(a => a.block_reference === 'history')}
+            />
           </ReportBlock>
 
           <ReportBlock 
@@ -823,7 +838,12 @@ const ReportPage: React.FC = () => {
             isCompleted={isBlockCompleted('clinical_observation')}
             description="Avaliação comportamental e observações clínicas"
           >
-            <Block3_ClinicalObservation data={reportData} onDataChange={handleClinicalObservationChange} />
+            <Block3_ClinicalObservation 
+              data={reportData} 
+              onDataChange={handleClinicalObservationChange} 
+              onFilesChange={handleFilesChange} 
+              attachments={existingAttachments.filter(a => a.block_reference === 'clinical_observation')}
+            />
           </ReportBlock>
 
           <ReportBlock 
@@ -832,7 +852,12 @@ const ReportPage: React.FC = () => {
             isCompleted={reportData.applied_instruments.length > 0}
             description="Escalas e testes utilizados na avaliação"
           >
-            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} />
+            <Block4_AppliedInstruments 
+              data={reportData} 
+              onDataChange={handleInstrumentsChange} 
+              onFilesChange={handleFilesChange} 
+              attachments={existingAttachments.filter(a => a.block_reference.startsWith('applied_instruments'))}
+            />
           </ReportBlock>
 
           <ReportBlock 
