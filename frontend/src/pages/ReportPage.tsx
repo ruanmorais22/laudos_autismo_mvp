@@ -58,6 +58,13 @@ const ReportBlock: React.FC<ReportBlockProps> = ({ title, children, isCompleted,
   );
 };
 
+const StickyProgressBar: React.FC<{ progress: number; isVisible: boolean }> = ({ progress, isVisible }) => {
+  return (
+    <div className={`sticky-progress-bar ${isVisible ? 'visible' : ''}`}>
+      <div className="progress-bar-inner" style={{ width: `${progress}%` }} />
+    </div>
+  );
+};
 
 const ReportPage: React.FC = () => {
   const { patientId } = useParams();
@@ -616,7 +623,8 @@ const ReportPage: React.FC = () => {
 
   return (
     <div className="report-page">
-      <div className={`report-header ${isScrolled ? 'scrolled' : ''}`}>
+      <StickyProgressBar progress={progressPercentage} isVisible={isScrolled} />
+      <div className="report-header">
         <div className="patient-info-card">
           <div className="patient-avatar">👤</div>
           <div className="patient-details">
