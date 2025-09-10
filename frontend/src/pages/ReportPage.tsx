@@ -59,7 +59,6 @@ const ReportBlock: React.FC<ReportBlockProps> = ({ title, children, isCompleted,
 
 const ReportPage: React.FC = () => {
   const { patientId } = useParams();
-  const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
@@ -363,6 +362,9 @@ const ReportPage: React.FC = () => {
 
       if (historyError) throw historyError;
 
+      // Garantir que reportId não é nulo para as próximas operações
+      if (!reportId) throw new Error("ID do relatório não está disponível após a criação.");
+
       // 3. Salvar observações clínicas
       const observationData = {
         report_id: reportId,
@@ -388,7 +390,7 @@ const ReportPage: React.FC = () => {
         .eq('report_id', reportId);
 
       // Inserir novos critérios marcados
-      const criteriaToInsert = [];
+      const criteriaToInsert: { report_id: string; criterion: string; is_met: boolean }[] = [];
       Object.entries(reportData.diagnostic_criteria).forEach(([key, value]) => {
         if (key.startsWith('dsm5_') && value === true) {
           const criterion = key.replace('dsm5_', '');
@@ -416,7 +418,7 @@ const ReportPage: React.FC = () => {
         .eq('report_id', reportId);
 
       // Inserir novos
-      const diagnosesToInsert = [];
+      const diagnosesToInsert: { report_id: string; diagnosis_type: string; condition_name: string }[] = [];
       
       if (reportData.diagnostic_criteria.differential_diagnosis.trim()) {
         const differentials = reportData.diagnostic_criteria.differential_diagnosis
