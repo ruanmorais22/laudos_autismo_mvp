@@ -12,6 +12,12 @@ import AccountPage from './pages/AccountPage';
 import './App.css';
 import type { Session } from '@supabase/supabase-js';
 
+import iconHome from './assets/icon-home.svg';
+import iconPatients from './assets/icon-patients.svg';
+import iconLogin from './assets/icon-login.svg';
+import iconRegister from './assets/icon-register.svg';
+import iconAccount from './assets/icon-account.svg';
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -50,29 +56,29 @@ const Layout: React.FC = () => {
             </button>
             <nav className={`nav ${isMenuOpen ? 'open' : ''}`}>
               <Link to={session ? "/dashboard" : "/"} className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                <span>🏠</span>
+                <img src={iconHome} alt="Início" className="nav-icon" />
                 Início
               </Link>
               {session && (
                 <Link to="/patients" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <span>👥</span>
+                  <img src={iconPatients} alt="Pacientes" className="nav-icon" />
                   Pacientes
                 </Link>
               )}
               {!session ? (
                 <>
                   <Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                    <span>🔐</span>
+                    <img src={iconLogin} alt="Login" className="nav-icon" />
                     Login
                   </Link>
                   <Link to="/register" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                    <span>📝</span>
+                    <img src={iconRegister} alt="Cadastro" className="nav-icon" />
                     Cadastro
                   </Link>
                 </>
               ) : (
                 <Link to="/account" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                  <span>👤</span>
+                  <img src={iconAccount} alt="Minha Conta" className="nav-icon" />
                   Minha Conta
                 </Link>
               )}
@@ -112,8 +118,8 @@ const HomePage = () => (
       <div className="hero-content">
         <h1>Sistema de Laudos de TEA</h1>
         <p className="hero-description">
-          Plataforma profissional para geração de laudos especializados em 
-          Transtorno do Espectro Autista (TEA), desenvolvida para profissionais da saúde.
+          Plataforma profissional para emissão de laudos especializados em Transtorno do Espectro Autista (TEA)
+          criada para apoiar profissionais da saúde.
         </p>
         <div className="hero-actions">
           <Link to="/patients" className="btn-primary">

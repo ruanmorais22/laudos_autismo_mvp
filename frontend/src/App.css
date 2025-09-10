@@ -67,8 +67,9 @@
   transform: translateY(-1px);
 }
 
-.nav-link span {
-  font-size: 1.1rem;
+.nav-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .menu-toggle {
