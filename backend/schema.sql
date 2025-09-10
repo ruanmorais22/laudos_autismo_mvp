@@ -154,8 +154,7 @@ CREATE TABLE reports (
 
 -- Bloco 2: Histórico
 CREATE TABLE report_history (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    report_id UUID PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
     pregnancy_complications TEXT,
     delivery_complications TEXT,
     developmental_milestones TEXT,
@@ -170,8 +169,7 @@ CREATE TABLE report_history (
 
 -- Bloco 3: Observação Clínica
 CREATE TABLE clinical_observations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    report_id UUID PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
     verbal_communication TEXT,
     nonverbal_communication TEXT,
     social_interaction TEXT,
@@ -186,7 +184,7 @@ CREATE TABLE clinical_observations (
 
 -- Bloco 4: Instrumentos/Testes Aplicados
 CREATE TABLE applied_instruments (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), -- Mantemos ID aqui pois um laudo pode ter vários instrumentos
     report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
     instrument_name VARCHAR(255) NOT NULL, -- ADOS-2, M-CHAT, Vineland, etc.
     application_date DATE,
@@ -222,8 +220,7 @@ CREATE TABLE differential_diagnoses (
 
 -- Bloco 6: Funcionalidade e Impacto
 CREATE TABLE functionality_assessment (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    report_id UUID PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
     daily_routine TEXT,
     feeding_habits TEXT,
     sleep_patterns TEXT,
@@ -240,7 +237,7 @@ CREATE TABLE functionality_assessment (
 
 -- Bloco 7: Intervenções Prévias
 CREATE TABLE previous_interventions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), -- Um laudo pode ter várias intervenções
     report_id UUID NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
     intervention_type VARCHAR(100) NOT NULL, -- ABA, Fonoaudiologia, TO, etc.
     professional_name VARCHAR(255),
