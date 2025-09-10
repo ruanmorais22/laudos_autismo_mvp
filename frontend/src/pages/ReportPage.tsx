@@ -4,6 +4,8 @@ import { supabase } from '../services/supabaseClient';
 
 import Block2_History from '../components/report/Block2_History';
 import Block3_ClinicalObservation from '../components/report/Block3_ClinicalObservation';
+import Block4_AppliedInstruments from '../components/report/Block4_AppliedInstruments';
+import type { Instrument } from '../components/report/Block4_AppliedInstruments';
 import Block5_DiagnosticCriteria from '../components/report/Block5_DiagnosticCriteria';
 
 type Patient = {
@@ -113,13 +115,7 @@ const ReportPage: React.FC = () => {
       repetitive_behaviors: '',
       sensory_sensitivities: '',
     },
-    instruments_applied: {
-      cars: false,
-      ados: false,
-      mchat: false,
-      vineland: false,
-      other_instruments: '',
-    },
+    applied_instruments: [] as Instrument[],
     diagnostic_criteria: {
       dsm5_A1: false,
       dsm5_A2: false,
@@ -206,6 +202,14 @@ const ReportPage: React.FC = () => {
     setHasUnsavedChanges(true);
   };
 
+  const handleInstrumentsChange = (field: 'applied_instruments', value: Instrument[]) => {
+    setReportData(prevData => ({
+      ...prevData,
+      [field]: value,
+    }));
+    setHasUnsavedChanges(true);
+  };
+
   // Estado para armazenar o ID do relatório atual
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
 
@@ -284,13 +288,7 @@ const ReportPage: React.FC = () => {
               repetitive_behaviors: observationData?.repetitive_behaviors || '',
               sensory_sensitivities: observationData?.sensory_hypersensitivity || '',
             },
-            instruments_applied: {
-              cars: false,
-              ados: false,
-              mchat: false,
-              vineland: false,
-              other_instruments: '',
-            },
+            applied_instruments: [], // TODO: Carregar instrumentos salvos
             diagnostic_criteria: {
               dsm5_A1: criteriaMap['dsm5_A1'] || false,
               dsm5_A2: criteriaMap['dsm5_A2'] || false,
@@ -621,20 +619,10 @@ const ReportPage: React.FC = () => {
           <ReportBlock 
             title="Instrumentos Aplicados" 
             stepNumber={4}
-            isCompleted={false}
+            isCompleted={reportData.applied_instruments.length > 0}
             description="Escalas e testes utilizados na avaliação"
           >
-            <div className="instruments-block">
-              <p className="coming-soon">🔧 Em desenvolvimento</p>
-              <p>Esta seção incluirá:</p>
-              <ul>
-                <li>CARS (Childhood Autism Rating Scale)</li>
-                <li>ADOS-2 (Autism Diagnostic Observation Schedule)</li>
-                <li>M-CHAT (Modified Checklist for Autism in Toddlers)</li>
-                <li>Escala Vineland</li>
-                <li>Outros instrumentos aplicados</li>
-              </ul>
-            </div>
+            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} />
           </ReportBlock>
 
           <ReportBlock 
