@@ -26,10 +26,15 @@ const translationMap: Record<string, string> = {
   comorbidities: 'Comorbidades',
 };
 
+interface LocationState {
+  patient: any;
+  reportData: any;
+}
+
 const ReportPreviewPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { patient, reportData } = location.state || {};
+  const { patient, reportData } = (location.state as LocationState) || {};
   const reportContentRef = React.useRef<HTMLDivElement>(null);
 
   if (!patient || !reportData) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
 import Block2_History from '../components/report/Block2_History';
@@ -68,6 +68,7 @@ const StickyProgressBar: React.FC<{ progress: number; isVisible: boolean }> = ({
 
 const ReportPage: React.FC = () => {
   const { patientId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -245,23 +246,25 @@ const ReportPage: React.FC = () => {
     const loadReportData = async () => {
       if (!patient) return;
 
-      try {
-        // Buscar relatório principal
-        const { data: reportData, error: reportError } = await supabase
-          .from('reports')
-          .select('*')
-          .eq('patient_id', patient.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
+      const reportIdFromUrl = searchParams.get('reportId');
 
-        if (reportError) {
-          console.error('Erro ao carregar relatório:', reportError);
-          return;
-        }
+      // Só carrega dados se um reportId for especificado na URL
+      if (reportIdFromUrl) {
+        try {
+          // Buscar relatório principal
+          const { data: report, error: reportError } = await supabase
+            .from('reports')
+            .select('*')
+            .eq('id', reportIdFromUrl)
+            .single();
 
-        if (reportData && reportData.length > 0) {
-          const report = reportData[0];
-          setCurrentReportId(report.id);
+          if (reportError) {
+            console.error('Erro ao carregar relatório:', reportError);
+            return;
+          }
+
+          if (report) {
+            setCurrentReportId(report.id);
 
           // Carregar dados do histórico
           const { data: historyData } = await supabase
