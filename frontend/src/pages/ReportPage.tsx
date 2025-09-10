@@ -150,22 +150,24 @@ const ReportPage: React.FC = () => {
         return Object.values(reportData.history).some(value => value.trim() !== '');
       case 'clinical_observation':
         return Object.values(reportData.clinical_observation).some(value => value.trim() !== '');
+      case 'applied_instruments':
+        return reportData.applied_instruments.length > 0;
       case 'diagnostic_criteria':
         const { diagnostic_criteria } = reportData;
         const hasCheckedCriteria = Object.entries(diagnostic_criteria)
           .filter(([key]) => key.startsWith('dsm5_'))
           .some(([, value]) => value === true);
-        return hasCheckedCriteria || diagnostic_criteria.differential_diagnosis.trim() !== '';
+        return hasCheckedCriteria || diagnostic_criteria.differential_diagnosis.trim() !== '' || diagnostic_criteria.comorbidities.trim() !== '';
       default:
         return false;
     }
   };
 
   // Calcular progresso geral
-  const completedBlocks = ['history', 'clinical_observation', 'diagnostic_criteria']
-    .filter(block => isBlockCompleted(block)).length;
-  const totalBlocks = 5;
-  const progressPercentage = Math.round((completedBlocks / totalBlocks) * 100);
+  const blocksToCheck = ['history', 'clinical_observation', 'applied_instruments', 'diagnostic_criteria'];
+  const completedBlocks = blocksToCheck.filter(block => isBlockCompleted(block)).length;
+  const totalBlocks = blocksToCheck.length; // Total de blocos que contam para o progresso
+  const progressPercentage = totalBlocks > 0 ? Math.round((completedBlocks / totalBlocks) * 100) : 0;
 
   // Handler para atualizar os dados do Bloco 2
   const handleHistoryChange = (field: keyof typeof reportData.history, value: string) => {
