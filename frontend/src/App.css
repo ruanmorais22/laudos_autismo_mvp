@@ -232,6 +232,20 @@
   z-index: 90;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   border-radius: 0 0 12px 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.report-header.scrolled .patient-info-card {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.report-header.scrolled {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .report-block {

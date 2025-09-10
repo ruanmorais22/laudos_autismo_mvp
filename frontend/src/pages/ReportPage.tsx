@@ -68,6 +68,23 @@ const ReportPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Efeito para detectar a rolagem da página
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Buscar dados do paciente
   useEffect(() => {
@@ -572,7 +589,7 @@ const ReportPage: React.FC = () => {
 
   return (
     <div className="report-page">
-      <div className="report-header">
+      <div className={`report-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="patient-info-card">
           <div className="patient-avatar">👤</div>
           <div className="patient-details">
