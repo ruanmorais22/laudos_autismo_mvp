@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     setMessage('');
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
@@ -22,7 +22,6 @@ const LoginPage: React.FC = () => {
     } else {
       setMessage('Login realizado com sucesso!');
       // TODO: Redirecionar para o dashboard
-      console.log(data);
     }
     setLoading(false);
   };
