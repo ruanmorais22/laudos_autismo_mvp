@@ -46,7 +46,7 @@ const RegisterPage: React.FC = () => {
     <div className="page-container">
       <div className="page-header">
         <h1>Cadastro de Profissional</h1>
-        <p>Registre-se para acessar o sistema AutismoCare</p>
+        <p>Registre-se para acessar o sistema Blua Laudos</p>
       </div>
       
       <div className="card">

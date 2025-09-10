@@ -99,7 +99,7 @@ const Layout: React.FC = () => {
 
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2024 AutismoCare - Sistema especializado em laudos de TEA</p>
+          <p>&copy; 2024 Blua Laudos - Sistema especializado em laudos de TEA</p>
         </div>
       </footer>
     </div>

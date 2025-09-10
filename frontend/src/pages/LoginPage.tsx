@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
     <div className="page-container">
       <div className="page-header">
         <h1>Acesso ao Sistema</h1>
-        <p>Entre com suas credenciais para acessar o AutismoCare</p>
+        <p>Entre com suas credenciais para acessar o Blua Laudos</p>
       </div>
       
       <div className="card">
