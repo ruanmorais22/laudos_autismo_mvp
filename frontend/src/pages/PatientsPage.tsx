@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import PatientForm from '../components/PatientForm';
 
@@ -80,12 +81,15 @@ const PatientsPage: React.FC = () => {
                   <tr key={patient.id}>
                     <td>{patient.full_name}</td>
                     <td>{new Date(patient.date_of_birth).toLocaleDateString()}</td>
-                    <td>{new Date(patient.created_at).toLocaleDateString()}</td>
-                    <td>
-                      <button onClick={() => alert(`TODO: Editar paciente ${patient.id}`)}>Editar</button>
-                      <button onClick={() => alert(`TODO: Excluir paciente ${patient.id}`)}>Excluir</button>
-                    </td>
-                  </tr>
+                <td>{new Date(patient.created_at).toLocaleDateString()}</td>
+                <td>
+                  <Link to={`/report/${patient.id}`}>
+                    <button>Novo Laudo</button>
+                  </Link>
+                  <button onClick={() => alert(`TODO: Editar paciente ${patient.id}`)}>Editar</button>
+                  <button onClick={() => alert(`TODO: Excluir paciente ${patient.id}`)}>Excluir</button>
+                </td>
+              </tr>
                 ))}
               </tbody>
             </table>
