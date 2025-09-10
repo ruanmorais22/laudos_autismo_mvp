@@ -150,7 +150,9 @@ const PatientsPage: React.FC = () => {
                 <tbody>
                   {patients.map((patient) => (
                     <tr key={patient.id}>
-                      <td className="patient-name">{patient.full_name}</td>
+                      <td className="patient-name">
+                        <Link to={`/patients/${patient.id}`}>{patient.full_name}</Link>
+                      </td>
                       <td>{new Date(patient.date_of_birth).toLocaleDateString('pt-BR')}</td>
                       <td>{new Date(patient.created_at).toLocaleDateString('pt-BR')}</td>
                       <td className="actions">
