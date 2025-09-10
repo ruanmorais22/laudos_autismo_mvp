@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PatientsPage from './pages/PatientsPage';
 import './App.css';
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
             <li>
               <Link to="/register">Cadastro</Link>
             </li>
+            <li>
+              <Link to="/patients">Pacientes</Link>
+            </li>
           </ul>
         </nav>
 
@@ -26,6 +30,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/patients" element={<PatientsPage />} />
           <Route path="/" element={<HomePage />} />
         </Routes>
       </div>
