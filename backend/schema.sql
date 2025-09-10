@@ -268,7 +268,7 @@ CREATE TABLE evidence_based_therapies (
     target_age_max INTEGER,
     target_symptoms TEXT[],
     effectiveness_level VARCHAR(20), -- 'ALTA', 'MODERADA', 'BAIXA'
-    references TEXT,
+    bibliographic_references TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
