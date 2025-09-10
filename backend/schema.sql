@@ -358,3 +358,65 @@ INSERT INTO legal_references (law_number, law_name, description, effective_date,
 ('Decreto 8.368/2014', 'Regulamentação da Lei 12.764/2012', 'Regulamenta a Lei nº 12.764, de 27 de dezembro de 2012', '2014-12-02', 'FEDERAL'),
 ('Lei 13.977/2020', 'Carteira de Identificação da Pessoa com TEA', 'Altera a Lei nº 12.764, para instituir a Carteira de Identificação', '2020-01-08', 'FEDERAL'),
 ('Nota Técnica MEC 24/2013', 'Orientação aos Sistemas de Ensino', 'Orientação aos Sistemas de Ensino para a implementação da Lei nº 12.764/2012', '2013-04-21', 'NORMATIVA');
+
+-- =============================================================================
+-- POLÍTICAS DE SEGURANÇA (ROW LEVEL SECURITY - RLS)
+-- =============================================================================
+
+-- Habilitar RLS nas tabelas sensíveis
+ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE report_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinical_observations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE applied_instruments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE diagnostic_criteria ENABLE ROW LEVEL SECURITY;
+ALTER TABLE differential_diagnoses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE functionality_assessment ENABLE ROW LEVEL SECURITY;
+ALTER TABLE previous_interventions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE therapeutic_recommendations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attachments ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para a tabela 'patients'
+CREATE POLICY "Usuários podem ver e gerenciar apenas seus próprios pacientes."
+ON patients FOR ALL
+USING (auth.uid() = created_by)
+WITH CHECK (auth.uid() = created_by);
+
+-- Políticas para a tabela 'reports'
+CREATE POLICY "Usuários podem ver e gerenciar apenas seus próprios laudos."
+ON reports FOR ALL
+USING (auth.uid() = professional_id)
+WITH CHECK (auth.uid() = professional_id);
+
+-- Políticas para as tabelas de dados do laudo (exemplo para report_history)
+-- Esta política assume que o acesso é determinado pela propriedade do laudo principal.
+CREATE POLICY "Usuários podem acessar dados de histórico apenas de seus próprios laudos."
+ON report_history FOR ALL
+USING (
+  (SELECT professional_id FROM reports WHERE id = report_id) = auth.uid()
+);
+
+-- Repetir política semelhante para outras tabelas de dados de laudo
+CREATE POLICY "Usuários podem acessar observações clínicas apenas de seus próprios laudos."
+ON clinical_observations FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar instrumentos aplicados apenas de seus próprios laudos."
+ON applied_instruments FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar critérios diagnósticos apenas de seus próprios laudos."
+ON diagnostic_criteria FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar diagnósticos diferenciais apenas de seus próprios laudos."
+ON differential_diagnoses FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar avaliações de funcionalidade apenas de seus próprios laudos."
+ON functionality_assessment FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar intervenções prévias apenas de seus próprios laudos."
+ON previous_interventions FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar recomendações terapêuticas apenas de seus próprios laudos."
+ON therapeutic_recommendations FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
+
+CREATE POLICY "Usuários podem acessar anexos apenas de seus próprios laudos."
+ON attachments FOR ALL USING ((SELECT professional_id FROM reports WHERE id = report_id) = auth.uid());
