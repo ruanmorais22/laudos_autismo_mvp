@@ -610,8 +610,8 @@ const ReportPage: React.FC = () => {
 
   // Função para gerar e enviar o laudo final
   const handleGenerateReport = async () => {
-    if (!patient) {
-      alert('Erro: Dados do paciente não encontrados.');
+    if (!patient || !currentReportId) {
+      alert('Erro: Dados do paciente ou do laudo não encontrados. Salve um rascunho primeiro.');
       return;
     }
 
@@ -627,12 +627,37 @@ const ReportPage: React.FC = () => {
 
     setIsSaving(true);
     try {
+      // 1. Buscar dados do usuário logado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado.');
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      // 2. Buscar anexos e gerar URLs públicas
+      const { data: attachments } = await supabase
+        .from('attachments')
+        .select('storage_path')
+        .eq('report_id', currentReportId);
+
+      const attachmentUrls = attachments?.map(file => {
+        const { data } = supabase.storage.from('report_attachments').getPublicUrl(file.storage_path);
+        return data.publicUrl;
+      }) || [];
+
+      // 3. Montar o payload final
       const finalReportPayload = {
         patient_details: patient,
         report_data: reportData,
+        professional_details: { ...user, profile: profileData },
+        attachments: attachmentUrls,
         generated_at: new Date().toISOString(),
       };
 
+      // 4. Enviar para o webhook
       const response = await fetch('https://n8n.minhalara.com.br/webhook/tea_laudos', {
         method: 'POST',
         headers: {
