@@ -28,10 +28,10 @@ const AccountPage: React.FC = () => {
           .eq('id', user.id)
           .single();
         
-        if (error) {
+        if (error && error.code !== 'PGRST116') { // PGRST116 = single row not found
           console.error("Erro ao buscar perfil:", error);
         } else {
-          setProfile(profileData);
+          setProfile(profileData || { specialty: '', professional_registry: '', phone: '' });
         }
       }
       setLoading(false);
@@ -43,14 +43,16 @@ const AccountPage: React.FC = () => {
     e.preventDefault();
     if (!user || !profile) return;
 
-    const { error } = await supabase.from('profiles').update({
+    const { error } = await supabase.from('profiles').upsert({
+      id: user.id, // Garante que estamos atualizando ou inserindo para o usuário correto
       specialty: profile.specialty,
       professional_registry: profile.professional_registry,
       phone: profile.phone,
-    }).eq('id', user.id);
+      // full_name e role são gerenciados pelo trigger e auth metadata
+    }, { onConflict: 'id' });
 
     if (error) {
-      alert('Erro ao atualizar perfil.');
+      alert(`Erro ao atualizar perfil: ${error.message}`);
     } else {
       alert('Perfil atualizado com sucesso!');
     }
