@@ -472,6 +472,54 @@ const ReportPage: React.FC = () => {
     alert('Função de preview será implementada em breve!');
   };
 
+  // Função para gerar e enviar o laudo final
+  const handleGenerateReport = async () => {
+    if (!patient) {
+      alert('Erro: Dados do paciente não encontrados.');
+      return;
+    }
+
+    if (progressPercentage < 80) {
+      alert('Complete pelo menos 80% do formulário para gerar o laudo final.');
+      return;
+    }
+
+    const confirmation = window.confirm('Tem certeza que deseja gerar e enviar o laudo final?');
+    if (!confirmation) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const finalReportPayload = {
+        patient_details: patient,
+        report_data: reportData,
+        generated_at: new Date().toISOString(),
+      };
+
+      const response = await fetch('https://n8n.minhalara.com.br/webhook/tea_laudos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalReportPayload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na comunicação com o servidor: ${response.statusText}`);
+      }
+
+      // TODO: Marcar o laudo como 'CONCLUIDO' no banco de dados.
+
+      alert('Laudo gerado e enviado com sucesso!');
+    } catch (err: any) {
+      console.error('Erro ao gerar laudo:', err);
+      alert(`Ocorreu um erro ao enviar o laudo: ${err.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Estados de loading e erro
   if (loading) {
     return (
@@ -664,8 +712,8 @@ const ReportPage: React.FC = () => {
             
             <button 
               className="btn-generate success" 
-              disabled={progressPercentage < 80}
-              onClick={() => alert('Função de geração final será implementada!')}
+              disabled={progressPercentage < 80 || isSaving}
+              onClick={handleGenerateReport}
             >
               📄 Gerar Laudo Final
             </button>
