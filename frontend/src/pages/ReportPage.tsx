@@ -282,6 +282,12 @@ const ReportPage: React.FC = () => {
             .select('*')
             .eq('report_id', report.id);
 
+          // Carregar instrumentos aplicados
+          const { data: instrumentsData } = await supabase
+            .from('applied_instruments')
+            .select('*')
+            .eq('report_id', report.id);
+
           // Preparar critérios DSM-5
           const criteriaMap: { [key: string]: boolean } = {};
           if (criteriaData) {
@@ -308,7 +314,7 @@ const ReportPage: React.FC = () => {
               repetitive_behaviors: observationData?.repetitive_behaviors || '',
               sensory_sensitivities: observationData?.sensory_hypersensitivity || '',
             },
-            applied_instruments: [], // TODO: Carregar instrumentos salvos
+            applied_instruments: instrumentsData || [],
             diagnostic_criteria: {
               dsm5_A1: criteriaMap['dsm5_A1'] || false,
               dsm5_A2: criteriaMap['dsm5_A2'] || false,
@@ -474,6 +480,27 @@ const ReportPage: React.FC = () => {
           .insert(diagnosesToInsert);
 
         if (diagnosesError) throw diagnosesError;
+      }
+
+      // 6. Salvar instrumentos aplicados
+      // Deletar existentes
+      await supabase
+        .from('applied_instruments')
+        .delete()
+        .eq('report_id', reportId);
+      
+      // Inserir novos
+      const instrumentsToInsert = reportData.applied_instruments.map(({ id, ...rest }) => ({
+        ...rest,
+        report_id: reportId,
+      }));
+
+      if (instrumentsToInsert.length > 0) {
+        const { error: instrumentsError } = await supabase
+          .from('applied_instruments')
+          .insert(instrumentsToInsert);
+        
+        if (instrumentsError) throw instrumentsError;
       }
 
       setLastSaved(new Date());
