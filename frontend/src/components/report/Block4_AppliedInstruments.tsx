@@ -74,6 +74,7 @@ const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange, o
               rows={3}
             />
           </div>
+          {/* TEMPORARIAMENTE DESABILITADO - Upload de arquivos
           <div className="form-group">
             <label htmlFor={`file_upload_instrument_${instrument.id}`}>Upload de protocolos/testes</label>
             <input type="file" id={`file_upload_instrument_${instrument.id}`} onChange={(e) => onFilesChange('applied_instruments', e.target.files, instrument.id)} />
@@ -92,6 +93,7 @@ const Block4_AppliedInstruments: React.FC<BlockProps> = ({ data, onDataChange, o
               </div>
             )}
           </div>
+          */}
           <button type="button" className="btn-remove" onClick={() => handleRemoveInstrument(instrument.id)}>
             Remover Instrumento
           </button>

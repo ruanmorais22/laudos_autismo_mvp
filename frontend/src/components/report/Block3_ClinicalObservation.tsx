@@ -92,6 +92,7 @@ const Block3_ClinicalObservation: React.FC<BlockProps> = ({ data, onDataChange, 
         />
       </div>
       
+      {/* TEMPORARIAMENTE DESABILITADO - Upload de arquivos
       <div className="form-group">
         <label htmlFor="file_upload_observation">
           🎥 Registros de Observação Clínica
@@ -122,6 +123,7 @@ const Block3_ClinicalObservation: React.FC<BlockProps> = ({ data, onDataChange, 
           </div>
         )}
       </div>
+      */}
     </div>
   );
 };

@@ -85,6 +85,7 @@ const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChang
         />
       </div>
       
+      {/* TEMPORARIAMENTE DESABILITADO - Upload de arquivos
       <div className="form-group">
         <label htmlFor="file_upload_history">
           📁 Documentos Médicos Anteriores
@@ -115,6 +116,7 @@ const Block2_History: React.FC<BlockProps> = ({ data, onDataChange, onFilesChang
           </div>
         )}
       </div>
+      */}
     </div>
   );
 };

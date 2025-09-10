@@ -77,8 +77,9 @@ const ReportPage: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: FileList | null }>({});
-  const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
+  // TEMPORARIAMENTE DESABILITADO - Upload de arquivos
+  // const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: FileList | null }>({});
+  // const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
 
   const sanitizeFileName = (name: string) => {
     const extension = name.split('.').pop();
@@ -171,10 +172,11 @@ const ReportPage: React.FC = () => {
     setHasUnsavedChanges(true);
   };
 
+  // TEMPORARIAMENTE DESABILITADO - Upload de arquivos
   const handleFilesChange = (block: string, files: FileList | null, id?: string) => {
-    const key = id ? `${block}-${id}` : block;
-    setFilesToUpload(prev => ({ ...prev, [key]: files }));
-    setHasUnsavedChanges(true);
+    // const key = id ? `${block}-${id}` : block;
+    // setFilesToUpload(prev => ({ ...prev, [key]: files }));
+    // setHasUnsavedChanges(true);
   };
 
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
@@ -192,7 +194,7 @@ const ReportPage: React.FC = () => {
           applied_instruments: [],
           diagnostic_criteria: { dsm5_A1: false, dsm5_A2: false, dsm5_A3: false, dsm5_B1: false, dsm5_B2: false, dsm5_B3: false, dsm5_B4: false, differential_diagnosis: '', comorbidities: '' },
         });
-        setExistingAttachments([]);
+        // setExistingAttachments([]);
         return;
       }
 
@@ -203,13 +205,13 @@ const ReportPage: React.FC = () => {
 
         setCurrentReportId(report.id);
         
-        const [historyRes, obsRes, instrumentsRes, criteriaRes, diffRes, attachmentsRes] = await Promise.all([
+        const [historyRes, obsRes, instrumentsRes, criteriaRes, diffRes] = await Promise.all([
           supabase.from('report_history').select('*').eq('report_id', report.id).single(),
           supabase.from('clinical_observations').select('*').eq('report_id', report.id).single(),
           supabase.from('applied_instruments').select('*').eq('report_id', report.id),
           supabase.from('diagnostic_criteria').select('*').eq('report_id', report.id),
           supabase.from('differential_diagnoses').select('*').eq('report_id', report.id),
-          supabase.from('attachments').select('*').eq('report_id', report.id)
+          // supabase.from('attachments').select('*').eq('report_id', report.id)
         ]);
 
         const criteriaMap = (criteriaRes.data || []).reduce((acc, item) => ({ ...acc, [`dsm5_${item.criterion}`]: item.is_met }), {});
@@ -222,7 +224,7 @@ const ReportPage: React.FC = () => {
           applied_instruments: instrumentsRes.data || [],
           diagnostic_criteria: { ...criteriaMap, differential_diagnosis: differentials, comorbidities },
         });
-        setExistingAttachments(attachmentsRes.data || []);
+        // setExistingAttachments(attachmentsRes.data || []);
 
       } catch (err) {
         console.error('Erro ao carregar dados do laudo:', err);
@@ -263,21 +265,21 @@ const ReportPage: React.FC = () => {
       
       // ... (lógica para salvar criteria e diagnoses)
 
-      // Upload de arquivos
-      for (const key in filesToUpload) {
-        const fileList = filesToUpload[key];
-        if (fileList) {
-          for (let i = 0; i < fileList.length; i++) {
-            const file = fileList[i];
-            const sanitizedName = sanitizeFileName(file.name);
-            const filePath = `${user.id}/${reportId}/${key}/${sanitizedName}`;
-            
-            await supabase.storage.from('report_attachments').upload(filePath, file, { upsert: true });
-            await supabase.from('attachments').insert({ report_id: reportId, block_reference: key, file_name: sanitizedName, storage_path: filePath, created_by: user.id });
-          }
-        }
-      }
-      setFilesToUpload({});
+      // TEMPORARIAMENTE DESABILITADO - Upload de arquivos
+      // for (const key in filesToUpload) {
+      //   const fileList = filesToUpload[key];
+      //   if (fileList) {
+      //     for (let i = 0; i < fileList.length; i++) {
+      //       const file = fileList[i];
+      //       const sanitizedName = sanitizeFileName(file.name);
+      //       const filePath = `${user.id}/${reportId}/${key}/${sanitizedName}`;
+      //       
+      //       await supabase.storage.from('report_attachments').upload(filePath, file, { upsert: true });
+      //       await supabase.from('attachments').insert({ report_id: reportId, block_reference: key, file_name: sanitizedName, storage_path: filePath, created_by: user.id });
+      //     }
+      //   }
+      // }
+      // setFilesToUpload({});
       
       setLastSaved(new Date());
       setHasUnsavedChanges(false);
@@ -311,21 +313,102 @@ const ReportPage: React.FC = () => {
       </div>
       <div className="report-content">
         <div className="report-blocks">
-          <ReportBlock title="Histórico e Anamnese" stepNumber={2} isCompleted={isBlockCompleted('history')} description="...">
-            <Block2_History data={reportData} onDataChange={(field, value) => handleDataChange('history', field, value)} onFilesChange={handleFilesChange} attachments={existingAttachments.filter(a => a.block_reference === 'history')} />
+          <ReportBlock 
+            title="Identificação do Paciente" 
+            stepNumber={1}
+            isCompleted={true}
+            description="Dados pessoais e informações básicas do paciente"
+          >
+            <div className="patient-identification">
+              <div className="info-grid">
+                <div className="info-item">
+                  <label>Nome Completo:</label>
+                  <span>{patient.full_name}</span>
+                </div>
+                <div className="info-item">
+                  <label>Data de Nascimento:</label>
+                  <span>{new Date(patient.date_of_birth).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <div className="info-item">
+                  <label>Idade:</label>
+                  <span>{calculateAge(patient.date_of_birth)}</span>
+                </div>
+                <div className="info-item">
+                  <label>Gênero:</label>
+                  <span>{patient.gender === 'NAO_INFORMADO' ? 'Não informado' : 
+                    patient.gender === 'MASCULINO' ? 'Masculino' : 
+                    patient.gender === 'FEMININO' ? 'Feminino' : 'Outro'}</span>
+                </div>
+                <div className="info-item">
+                  <label>Data de Cadastro:</label>
+                  <span>{new Date(patient.created_at).toLocaleDateString('pt-BR')}</span>
+                </div>
+              </div>
+            </div>
           </ReportBlock>
-          <ReportBlock title="Observação Clínica" stepNumber={3} isCompleted={isBlockCompleted('clinical_observation')} description="...">
-            <Block3_ClinicalObservation data={reportData} onDataChange={(field, value) => handleDataChange('clinical_observation', field, value)} onFilesChange={handleFilesChange} attachments={existingAttachments.filter(a => a.block_reference === 'clinical_observation')} />
+
+          <ReportBlock title="Histórico e Anamnese" stepNumber={2} isCompleted={isBlockCompleted('history')} description="Histórico médico, desenvolvimento e antecedentes familiares">
+            <Block2_History data={reportData} onDataChange={(field, value) => handleDataChange('history', field, value)} onFilesChange={handleFilesChange} attachments={[]} />
           </ReportBlock>
-          <ReportBlock title="Instrumentos Aplicados" stepNumber={4} isCompleted={isBlockCompleted('applied_instruments')} description="...">
-            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} onFilesChange={handleFilesChange} attachments={existingAttachments.filter(a => a.block_reference.startsWith('applied_instruments'))} />
+          <ReportBlock title="Observação Clínica" stepNumber={3} isCompleted={isBlockCompleted('clinical_observation')} description="Avaliação comportamental e observações clínicas">
+            <Block3_ClinicalObservation data={reportData} onDataChange={(field, value) => handleDataChange('clinical_observation', field, value)} onFilesChange={handleFilesChange} attachments={[]} />
           </ReportBlock>
-          <ReportBlock title="Critérios Diagnósticos" stepNumber={5} isCompleted={isBlockCompleted('diagnostic_criteria')} description="...">
+          <ReportBlock title="Instrumentos Aplicados" stepNumber={4} isCompleted={isBlockCompleted('applied_instruments')} description="Escalas e testes utilizados na avaliação">
+            <Block4_AppliedInstruments data={reportData} onDataChange={handleInstrumentsChange} onFilesChange={handleFilesChange} attachments={[]} />
+          </ReportBlock>
+          <ReportBlock title="Critérios Diagnósticos" stepNumber={5} isCompleted={isBlockCompleted('diagnostic_criteria')} description="Critérios DSM-5 e conclusões diagnósticas">
             <Block5_DiagnosticCriteria data={reportData} onDataChange={(field, value) => handleDataChange('diagnostic_criteria', field, value)} />
           </ReportBlock>
         </div>
         <div className="report-actions">
-          {/* ... (botões de ação) */}
+          <div className="action-buttons">
+            <button 
+              className="btn-save" 
+              onClick={handleSaveDraft}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="loading-spinner-small"></span>
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  💾 Salvar Rascunho
+                </>
+              )}
+            </button>
+            
+            <button 
+              className="btn-preview secondary" 
+              onClick={handleGeneratePreview}
+              disabled={progressPercentage < 60}
+            >
+              👁️ Visualizar Preview
+            </button>
+            
+            <button 
+              className="btn-generate success" 
+              disabled={progressPercentage < 80 || isSaving}
+              onClick={handleGenerateReport}
+            >
+              📄 Gerar Laudo Final
+            </button>
+
+            <button 
+              className="btn-cancel outline"
+              onClick={() => navigate('/patients')}
+              disabled={isSaving}
+            >
+              ❌ Cancelar
+            </button>
+          </div>
+          
+          <div className="action-info">
+            <p className="help-text">
+              💡 Dica: Complete pelo menos 80% do formulário para gerar o laudo final
+            </p>
+          </div>
         </div>
       </div>
     </div>
