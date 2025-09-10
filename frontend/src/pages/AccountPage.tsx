@@ -3,19 +3,64 @@ import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 
+type Profile = {
+  specialty: string;
+  professional_registry: string;
+  phone: string;
+};
+
 const AccountPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+
+      if (user) {
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error("Erro ao buscar perfil:", error);
+        } else {
+          setProfile(profileData);
+        }
+      }
       setLoading(false);
     };
-    fetchUser();
+    fetchData();
   }, []);
+
+  const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user || !profile) return;
+
+    const { error } = await supabase.from('profiles').update({
+      specialty: profile.specialty,
+      professional_registry: profile.professional_registry,
+      phone: profile.phone,
+    }).eq('id', user.id);
+
+    if (error) {
+      alert('Erro ao atualizar perfil.');
+    } else {
+      alert('Perfil atualizado com sucesso!');
+    }
+  };
+
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (profile) {
+      setProfile({ ...profile, [e.target.name]: e.target.value });
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -38,34 +83,30 @@ const AccountPage: React.FC = () => {
       </div>
       
       <div className="card">
-        <h2>Informações do Usuário</h2>
-        <div className="info-grid">
-          <div className="info-item">
-            <label>Email:</label>
-            <span>{user.email}</span>
+        <h2>Informações do Perfil</h2>
+        <form onSubmit={handleUpdateProfile}>
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" value={user.email} disabled />
           </div>
-          <div className="info-item">
-            <label>ID do Usuário:</label>
-            <span>{user.id}</span>
+          <div className="form-group">
+            <label>Nome Completo</label>
+            <input type="text" value={user.user_metadata.full_name || ''} disabled />
           </div>
-          <div className="info-item">
-            <label>Último Login:</label>
-            <span>{new Date(user.last_sign_in_at || '').toLocaleString('pt-BR')}</span>
+          <div className="form-group">
+            <label htmlFor="specialty">Especialidade</label>
+            <input type="text" id="specialty" name="specialty" value={profile?.specialty || ''} onChange={handleProfileChange} />
           </div>
-          {/* Exibir metadados se existirem */}
-          {user.user_metadata && (
-            <>
-              <div className="info-item">
-                <label>Nome Completo:</label>
-                <span>{user.user_metadata.full_name}</span>
-              </div>
-              <div className="info-item">
-                <label>Função:</label>
-                <span>{user.user_metadata.role}</span>
-              </div>
-            </>
-          )}
-        </div>
+          <div className="form-group">
+            <label htmlFor="professional_registry">Registro Profissional (CRM, CRP, etc.)</label>
+            <input type="text" id="professional_registry" name="professional_registry" value={profile?.professional_registry || ''} onChange={handleProfileChange} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone">Telefone</label>
+            <input type="tel" id="phone" name="phone" value={profile?.phone || ''} onChange={handleProfileChange} />
+          </div>
+          <button type="submit" className="btn-primary">Salvar Alterações</button>
+        </form>
       </div>
 
       <div className="page-actions">
