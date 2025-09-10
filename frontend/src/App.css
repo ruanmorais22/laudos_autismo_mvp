@@ -21,9 +21,18 @@
   padding: 1rem 0;
 }
 
-.logo h1 {
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.logo span {
   color: var(--white);
-  margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
 }

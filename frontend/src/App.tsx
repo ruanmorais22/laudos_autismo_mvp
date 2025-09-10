@@ -42,7 +42,8 @@ const Layout: React.FC = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <img src="/logo.png" alt="AutismoCare Logo" style={{ height: '40px' }} />
+              <img src="/logo.png" alt="Blua Laudos Logo" />
+              <span>Blua Laudos</span>
             </div>
             <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               &#9776;
@@ -126,7 +127,6 @@ const HomePage = () => (
     </div>
     
     <div className="features-section">
-      <h2>Funcionalidades</h2>
       <div className="features-grid">
         <div className="feature-card">
           <div className="feature-icon">👥</div>
