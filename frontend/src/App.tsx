@@ -48,7 +48,7 @@ const Layout: React.FC = () => {
               <span className="tagline">Sistema de Laudos Especializados</span>
             </div>
             <nav className="nav">
-              <Link to="/" className="nav-link">
+              <Link to={session ? "/dashboard" : "/"} className="nav-link">
                 <span>🏠</span>
                 Início
               </Link>
