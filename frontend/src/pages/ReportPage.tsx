@@ -320,9 +320,9 @@ const ReportPage: React.FC = () => {
         throw new Error('Usuário não autenticado');
       }
 
-      // Buscar informações completas do profissional
+      // Buscar informações completas do profissional na tabela profiles
       const { data: professionalData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
@@ -331,14 +331,20 @@ const ReportPage: React.FC = () => {
         patient_details: patient,
         report_data: reportData,
         professional_details: {
-          id: user.id,
-          email: user.email,
-          ...professionalData,
+          auth_user: {
+            id: user.id,
+            email: user.email,
+            phone: user.phone,
+            created_at: user.created_at,
+            user_metadata: user.user_metadata,
+          },
+          profile: professionalData || {},
         },
         report_metadata: {
           report_id: currentReportId,
           generated_at: new Date().toISOString(),
           generated_by: user.id,
+          application_version: '1.0.0',
         },
       };
 
